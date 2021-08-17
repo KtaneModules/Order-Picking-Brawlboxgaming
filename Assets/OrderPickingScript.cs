@@ -13,13 +13,337 @@ public class OrderPickingScript : MonoBehaviour
     public KMBombInfo BombInfo;
     public KMAudio Audio;
     public KMRuleSeedable RuleSeedable;
+    public KMSelectable enterButton;
+    public KMSelectable[] numberButtons, functionButtons;
+    public TextMesh screenText;
 
     private static int _moduleIdCounter = 1;
-    private int _moduleId;
-    private bool _moduleSolved;
+    private int _moduleId, orderCount, orderNumber, currentOrder = 1, currentScreen = 0, productNeeded, productTotal, productRemain, productId;
+    private bool _moduleSolved, allowTyping = true;
+    private string text, product, quantity, pallet, input;
+    private string[] palletsArray = new[] { "CHEP", "SIPPL", "SLPR", "EWHITE", "ECHEP", "ESIPPL", "ESLPR" }, productsArray = new[] { "TT", "GC", "GP", "DN", "HK", "AX", "MM" };
 
     void Start()
     {
+        _moduleId = _moduleIdCounter++;
 
+        for (int i = 0; i < numberButtons.Length; i++)
+        {
+            int j = i;
+            numberButtons[i].OnInteract += delegate ()
+            {
+                NumberButtonHandler(j);
+                return false;
+            };
+        }
+
+        orderCount = BombInfo.GetBatteryCount() % 3 + 1;
+        Debug.LogFormat("[Order Picking #{0}] Orders needed: {1}.", _moduleId, orderCount);
+        GenerateOrder();
+
+        int backNum = BombInfo.GetSerialNumber().Select(ch => ch >= '0' && ch <= '9' ? ch - '0' : ch - 'A' + 1).Sum();
+        int backspace = backNum % 3;
+
+        int conNum = BombInfo.GetPortCount() * BombInfo.GetPortPlateCount();
+        if (conNum % 3 == backNum % 3)
+        {
+            conNum++;
+        }
+        int confirm = conNum % 3;
+
+        int canNum = 0;
+        while (canNum == backspace || canNum == confirm)
+        {
+            canNum++;
+            canNum %= 3;
+        }
+        int cancel = canNum;
+
+        Debug.LogFormat("[Order Picking #{0}] The confirm button is {1}.", _moduleId, functionButtons[confirm].name);
+        Debug.LogFormat("[Order Picking #{0}] The cancel button is {1}.", _moduleId, functionButtons[cancel].name);
+        Debug.LogFormat("[Order Picking #{0}] The backspace button is {1}.", _moduleId, functionButtons[backspace].name);
+
+        functionButtons[backspace].OnInteract += delegate ()
+        {
+            BackspaceHandler(backspace);
+            return false;
+        };
+
+        functionButtons[confirm].OnInteract += delegate ()
+        {
+            ConfirmHandler(confirm);
+            return false;
+        };
+
+        functionButtons[cancel].OnInteract += delegate ()
+        {
+            CancelHandler(cancel);
+            return false;
+        };
+
+        enterButton.OnInteract = EnterButtonHandler;
+
+        StartCoroutine(ScreenFlash());
+
+        RenderScreen();
+    }
+
+    private void GenerateOrder()
+    {
+        Debug.LogFormat("[Order Picking #{0}] Order: {1}.", _moduleId, currentOrder);
+        orderNumber = Rnd.Range(1000, 10000);
+        Debug.LogFormat("[Order Picking #{0}] Order number: {1}.", _moduleId, orderNumber);
+        pallet = palletsArray[Rnd.Range(0, palletsArray.Length)];
+        Debug.LogFormat("[Order Picking #{0}] Pallet: {1}.", _moduleId, pallet);
+        product = productsArray[Rnd.Range(0, productsArray.Length)];
+        productId = Rnd.Range(1000, 10000);
+        Debug.LogFormat("[Order Picking #{0}] Product: {1}-{2}.", _moduleId, product, productId);
+        productNeeded = (orderNumber + productId) % 400;
+        switch (pallet)
+        {
+            case "CHEP":
+                productTotal = 231;
+                break;
+
+            case "SIPPL":
+                productTotal = 360;
+                break;
+
+            case "SLPR":
+                productTotal = 96;
+                break;
+
+            case "EWHITE":
+                productTotal = 216;
+                break;
+
+            case "ECHEP":
+                productTotal = 256;
+                break;
+
+            case "ESIPPL":
+                productTotal = 196;
+                break;
+
+            case "ESLPR":
+                productTotal = 110;
+                break;
+        }
+        Debug.LogFormat("[Order Picking #{0}] Product total: {1}.", _moduleId, productTotal);
+        while (productNeeded > productTotal)
+        {
+            if (BombInfo.GetOnIndicators().Count() > 0)
+                productNeeded -= 100;
+            else
+                productNeeded -= 50;
+        }
+        Debug.LogFormat("[Order Picking #{0}] Product needed: {1}.", _moduleId, productNeeded);
+        productRemain = productTotal - productNeeded;
+        Debug.LogFormat("[Order Picking #{0}] Product Remaining: {1}.", _moduleId, productRemain);
+    }
+
+    private void RenderScreen()
+    {
+        switch (currentScreen)
+        {
+            case 0:
+                text = "Order: " + orderNumber + "Confirm - ?Cancel - ?";
+                screenText.text = CharacterWrapping(text);
+                break;
+            case 1:
+                text = "Pick onto:\n" + pallet + "\n\nPress ENTER";
+                screenText.text = text;
+                break;
+            case 2:
+                text = "Product:\n" + product + "-" + productId + "\n\nQuantity\nneeded:\n???\n\nConfirm - ?";
+                screenText.text = text;
+                break;
+            case 3:
+                text = "Confirm    remaining: ";
+                screenText.text = CharacterWrapping(text);
+                break;
+        }
+    }
+
+    private IEnumerator ScreenFlash()
+    {
+        while (!_moduleSolved)
+        {
+            while (currentScreen == 3 && allowTyping)
+            {
+                screenText.text = CharacterWrapping(text + "█");
+                yield return null;
+            }
+            yield return null;
+        }
+    }
+
+    private string CharacterWrapping(string txt)
+    {
+        var list = new List<string>();
+        while (txt.Length > 11)
+        {
+            list.Add(txt.Substring(0, 11));
+            txt = txt.Substring(11);
+        }
+        list.Add(txt);
+        return list.Join("\n");
+    }
+
+    private void NumberButtonHandler(int num)
+    {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, numberButtons[num].transform);
+        numberButtons[num].AddInteractionPunch();
+        if (allowTyping && !_moduleSolved)
+        {
+            if (text.Length < 180)
+            {
+                text += num.ToString();
+                if (currentScreen == 3)
+                {
+                    input += num;
+                }
+            }
+        }
+    }
+
+    private bool EnterButtonHandler()
+    {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, enterButton.transform);
+        enterButton.AddInteractionPunch();
+        if (!_moduleSolved)
+        {
+            switch (currentScreen)
+            {
+                case 1:
+                    currentScreen = 2;
+                    RenderScreen();
+                    break;
+                case 3:
+                    if (input == productRemain.ToString())
+                    {
+                        input = "";
+                        currentScreen = 0;
+                        currentOrder++;
+                        if (currentOrder != orderCount + 1)
+                        {
+                            GenerateOrder();
+                        }
+                        RenderScreen();
+                    }
+                    else
+                    {
+                        Debug.LogFormat("[Order Picking #{0}] Remaining quantity entered was {1} but should have been {2}. Strike!", _moduleId, input, productRemain);
+                        input = "";
+                        StartCoroutine(Strike());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
+    }
+
+    private bool BackspaceHandler(int ix)
+    {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
+        functionButtons[ix].AddInteractionPunch();
+        if (allowTyping && !_moduleSolved && input != "")
+        {
+            if (currentScreen == 3)
+            {
+                input = input.Substring(0, input.Length - 1);
+                text = text.Substring(0, text.Length - (input.Length + 1)) + input;
+            }
+            else
+            {
+                StartCoroutine(Strike());
+                Debug.LogFormat("[Order Picking #{0}] Backspace button was pressed incorrectly. Strike!", _moduleId);
+            }
+        }
+        return false;
+    }
+
+    private bool ConfirmHandler(int ix)
+    {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
+        functionButtons[ix].AddInteractionPunch();
+        if (allowTyping && !_moduleSolved)
+        {
+            if (currentScreen == 0)
+            {
+                if (currentOrder == orderCount + 1)
+                {
+                    StartCoroutine(Strike());
+                }
+                else
+                {
+                    currentScreen = 1;
+                    RenderScreen();
+                }
+            }
+            else if (currentScreen == 2)
+            {
+                currentScreen = 3;
+                RenderScreen();
+            }
+            else
+            {
+                StartCoroutine(Strike());
+                Debug.LogFormat("[Order Picking #{0}] Confirm button was pressed incorrectly. Strike!", _moduleId);
+            }
+        }
+        return false;
+    }
+
+    private bool CancelHandler(int ix)
+    {
+        Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
+        functionButtons[ix].AddInteractionPunch();
+        if (allowTyping && !_moduleSolved)
+        {
+            if (currentScreen == 0 && currentOrder == orderCount + 1)
+                StartCoroutine(Pass());
+            else
+            {
+                StartCoroutine(Strike());
+                Debug.LogFormat("[Order Picking #{0}] Cancel button was pressed incorrectly. Strike!", _moduleId);
+            }
+        }
+        return false;
+    }
+
+    private IEnumerator Pass()
+    {
+        Module.HandlePass();
+        _moduleSolved = true;
+        allowTyping = false;
+        var txt = CharacterWrapping("Good job!  Now go home(:");
+        screenText.text = "";
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < txt.Length; i++)
+        {
+            screenText.text += txt[i];
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return null;
+    }
+
+    private IEnumerator Strike()
+    {
+        Module.HandleStrike();
+        allowTyping = false;
+        var txt = "Please see\na Team\nLeader so\nthey can\nrevert your\nmistake.";
+        screenText.text = "";
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < txt.Length; i++)
+        {
+            screenText.text += txt[i];
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return new WaitForSeconds(5f);
+        RenderScreen();
+        allowTyping = true;
     }
 }

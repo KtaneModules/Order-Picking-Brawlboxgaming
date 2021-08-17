@@ -36,6 +36,8 @@ ModelImporter:
     100060: Screen
     100062: ScreenContainerBlack
     100064: ScreenContainerGrey
+    100066: NumpadPlate
+    100068: Screw
     400000: 0
     400002: 0Button
     400004: 1
@@ -69,6 +71,8 @@ ModelImporter:
     400060: Screen
     400062: ScreenContainerBlack
     400064: ScreenContainerGrey
+    400066: NumpadPlate
+    400068: Screw
     2100000: No Name
     2300000: 0
     2300002: 0Button
@@ -102,6 +106,8 @@ ModelImporter:
     2300058: Screen
     2300060: ScreenContainerBlack
     2300062: ScreenContainerGrey
+    2300064: NumpadPlate
+    2300066: Screw
     3300000: 0
     3300002: 0Button
     3300004: 1
@@ -134,6 +140,8 @@ ModelImporter:
     3300058: Screen
     3300060: ScreenContainerBlack
     3300062: ScreenContainerGrey
+    3300064: NumpadPlate
+    3300066: Screw
     4300000: ModelComponent
     4300002: ScreenContainerBlack
     4300004: Screen
@@ -166,6 +174,8 @@ ModelImporter:
     4300058: F1
     4300060: F2
     4300062: F3
+    4300064: NumpadPlate
+    4300066: Screw
   externalObjects: {}
   materials:
     importMaterials: 1

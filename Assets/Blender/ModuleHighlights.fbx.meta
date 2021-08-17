@@ -1,0 +1,158 @@
+fileFormatVersion: 2
+guid: b7839879120251144b8f3d40df7cfa0b
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: 0ButtonHighlight
+    100002: 1ButtonHightlight
+    100004: 2ButtonHighlight
+    100006: 3ButtonHighlight
+    100008: 4ButtonHighlight
+    100010: 5ButtonHighlight
+    100012: 6ButtonHighlight
+    100014: 7ButtonHighlight
+    100016: 8ButtonHighlight
+    100018: 9ButtonHighlight
+    100020: EnterButtonHighlight
+    100022: F1ButtonHighlight
+    100024: F2ButtonHighlight
+    100026: F3ButtonHighlight
+    100028: //RootNode
+    400000: 0ButtonHighlight
+    400002: 1ButtonHightlight
+    400004: 2ButtonHighlight
+    400006: 3ButtonHighlight
+    400008: 4ButtonHighlight
+    400010: 5ButtonHighlight
+    400012: 6ButtonHighlight
+    400014: 7ButtonHighlight
+    400016: 8ButtonHighlight
+    400018: 9ButtonHighlight
+    400020: EnterButtonHighlight
+    400022: F1ButtonHighlight
+    400024: F2ButtonHighlight
+    400026: F3ButtonHighlight
+    400028: //RootNode
+    2100000: No Name
+    2300000: 0ButtonHighlight
+    2300002: 1ButtonHightlight
+    2300004: 2ButtonHighlight
+    2300006: 3ButtonHighlight
+    2300008: 4ButtonHighlight
+    2300010: 5ButtonHighlight
+    2300012: 6ButtonHighlight
+    2300014: 7ButtonHighlight
+    2300016: 8ButtonHighlight
+    2300018: 9ButtonHighlight
+    2300020: EnterButtonHighlight
+    2300022: F1ButtonHighlight
+    2300024: F2ButtonHighlight
+    2300026: F3ButtonHighlight
+    3300000: 0ButtonHighlight
+    3300002: 1ButtonHightlight
+    3300004: 2ButtonHighlight
+    3300006: 3ButtonHighlight
+    3300008: 4ButtonHighlight
+    3300010: 5ButtonHighlight
+    3300012: 6ButtonHighlight
+    3300014: 7ButtonHighlight
+    3300016: 8ButtonHighlight
+    3300018: 9ButtonHighlight
+    3300020: EnterButtonHighlight
+    3300022: F1ButtonHighlight
+    3300024: F2ButtonHighlight
+    3300026: F3ButtonHighlight
+    4300000: 1ButtonHightlight
+    4300002: 2ButtonHighlight
+    4300004: 3ButtonHighlight
+    4300006: 6ButtonHighlight
+    4300008: 5ButtonHighlight
+    4300010: 4ButtonHighlight
+    4300012: 7ButtonHighlight
+    4300014: 8ButtonHighlight
+    4300016: 9ButtonHighlight
+    4300018: 0ButtonHighlight
+    4300020: EnterButtonHighlight
+    4300022: F1ButtonHighlight
+    4300024: F2ButtonHighlight
+    4300026: F3ButtonHighlight
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
