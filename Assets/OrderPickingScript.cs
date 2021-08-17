@@ -140,7 +140,7 @@ public class OrderPickingScript : MonoBehaviour
         while (productNeeded > productTotal)
         {
             if (BombInfo.GetOnIndicators().Count() > 0)
-                productNeeded -= 100;
+                productNeeded -= 75;
             else
                 productNeeded -= 50;
         }
@@ -242,7 +242,6 @@ public class OrderPickingScript : MonoBehaviour
                     else
                     {
                         Debug.LogFormat("[Order Picking #{0}] Remaining quantity entered was {1} but should have been {2}. Strike!", _moduleId, input, productRemain);
-                        input = "";
                         StartCoroutine(Strike());
                     }
                     break;
@@ -356,6 +355,7 @@ public class OrderPickingScript : MonoBehaviour
         }
         yield return new WaitForSeconds(5f);
         currentScreen = 0;
+        input = "";
         RenderScreen();
         allowTyping = true;
     }
@@ -366,6 +366,8 @@ public class OrderPickingScript : MonoBehaviour
 
     IEnumerator ProcessTwitchCommand(string command)
     {
+        while (!allowTyping)
+            yield return true;
         command = command.ToLowerInvariant();
         if (command.StartsWith("press ")) command = command.Substring(6);
         else
@@ -422,29 +424,48 @@ public class OrderPickingScript : MonoBehaviour
                     enterButton.OnInteract();
                     break;
             }
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(0.1f);
         }
         yield return null;
     }
 
     IEnumerator TwitchHandleForcedSolve()
     {
+        while (!allowTyping)
+            yield return true;
         while (currentOrder < orderCount + 1)
         {
-            functionButtons[confirm].OnInteract();
-            yield return new WaitForSeconds(0.25f);
-            enterButton.OnInteract();
-            yield return new WaitForSeconds(0.25f);
-            functionButtons[confirm].OnInteract();
-            yield return new WaitForSeconds(0.25f);
-            var tmp = productRemain.ToString().ToCharArray();
-            foreach (var chr in tmp)
+            if (currentScreen == 0)
             {
-                numberButtons[Convert.ToInt32(chr)-48].OnInteract();
+                functionButtons[confirm].OnInteract();
                 yield return new WaitForSeconds(0.25f);
             }
-            enterButton.OnInteract();
-            yield return new WaitForSeconds(0.25f);
+            if (currentScreen == 1)
+            {
+                enterButton.OnInteract();
+                yield return new WaitForSeconds(0.25f);
+            }
+            if (currentScreen == 2)
+            {
+                functionButtons[confirm].OnInteract();
+                yield return new WaitForSeconds(0.25f);
+            }
+            if (currentScreen == 3)
+            {
+                while (input != "")
+                {
+                    functionButtons[backspace].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                var tmp = productRemain.ToString();
+                foreach (var chr in tmp)
+                {
+                    numberButtons[chr - '0'].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                enterButton.OnInteract();
+                yield return new WaitForSeconds(0.25f);
+            }
         }
         functionButtons[cancel].OnInteract();
 
