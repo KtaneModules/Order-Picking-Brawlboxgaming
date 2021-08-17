@@ -21,7 +21,7 @@ public class OrderPickingScript : MonoBehaviour
 
     private static int _moduleIdCounter = 1;
     private int _moduleId, orderCount, orderNumber, currentOrder = 1, currentScreen = 0, productNeeded, productTotal, productRemain, productId, backspace, confirm, cancel;
-    private int[] palletTotals = new[] { 231, 360, 96, 216, 256, 196, 110 };
+    private int[] palletTotals = new[] { 231, 360, 96, 216, 256, 196, 110 }, edgework;
     private bool _moduleSolved, allowTyping = true;
     private string text, product, quantity, pallet, input;
     private string[] palletsArray = new[] { "CHEP", "SIPPL", "SLPR", "EWHITE", "ECHEP", "ESIPPL", "ESLPR" }, productsArray = new[] { "TT", "GC", "GP", "DN", "HK", "AX", "MM" };
@@ -40,12 +40,31 @@ public class OrderPickingScript : MonoBehaviour
             };
         }
 
-        orderCount = BombInfo.GetBatteryCount() % 3 + 1;
+        var random = RuleSeedable.GetRNG();
+
+        edgework = new[] {
+            BombInfo.GetBatteryCount(),
+            BombInfo.GetPortCount(),
+            BombInfo.GetPortPlateCount(),
+            BombInfo.GetBatteryHolderCount(),
+            BombInfo.GetOnIndicators().Count(),
+            BombInfo.GetOffIndicators().Count(),
+            BombInfo.GetIndicators().Count()
+        };
+
+        if (random.Seed != 1)
+        {
+            for (int i = 0; i < palletTotals.Length; i++)
+                palletTotals[i] = random.Next(76, 501);
+            random.ShuffleFisherYates(edgework);
+        }
+
+        orderCount = edgework[0] % 3 + 1;
 
         int backNum = BombInfo.GetSerialNumber().Select(ch => ch >= '0' && ch <= '9' ? ch - '0' : ch - 'A' + 1).Sum();
         backspace = backNum % 3;
 
-        int conNum = BombInfo.GetPortCount() * BombInfo.GetPortPlateCount();
+        int conNum = edgework[1] * edgework[2];
         if (conNum % 3 == backNum % 3)
         {
             conNum++;
@@ -94,12 +113,9 @@ public class OrderPickingScript : MonoBehaviour
 
     private void GenerateOrder()
     {
-        var random = RuleSeedable.GetRNG();
         Debug.LogFormat("[Order Picking #{0}] Order: {1}.", _moduleId, currentOrder);
         orderNumber = Rnd.Range(1000, 10000);
         Debug.LogFormat("[Order Picking #{0}] Order number: {1}.", _moduleId, orderNumber);
-        if (random.Seed != 1)
-            random.ShuffleFisherYates(palletTotals);
         pallet = palletsArray[Rnd.Range(0, palletsArray.Length)];
         Debug.LogFormat("[Order Picking #{0}] Pallet: {1}.", _moduleId, pallet);
         product = productsArray[Rnd.Range(0, productsArray.Length)];
