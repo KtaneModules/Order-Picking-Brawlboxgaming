@@ -216,7 +216,7 @@ public class OrderPickingScript : MonoBehaviour
     private void NumberButtonHandler(int num)
     {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, numberButtons[num].transform);
-        numberButtons[num].AddInteractionPunch();
+        numberButtons[num].AddInteractionPunch(0.5f);
         if (allowTyping && !_moduleSolved)
         {
             if (text.Length < 180)
@@ -233,7 +233,7 @@ public class OrderPickingScript : MonoBehaviour
     private bool EnterButtonHandler()
     {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, enterButton.transform);
-        enterButton.AddInteractionPunch();
+        enterButton.AddInteractionPunch(0.5f);
         if (!_moduleSolved)
         {
             switch (currentScreen)
@@ -271,7 +271,7 @@ public class OrderPickingScript : MonoBehaviour
     private bool BackspaceHandler(int ix)
     {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
-        functionButtons[ix].AddInteractionPunch();
+        functionButtons[ix].AddInteractionPunch(0.5f);
         if (allowTyping && !_moduleSolved && input != "")
         {
             if (currentScreen == 3)
@@ -291,7 +291,7 @@ public class OrderPickingScript : MonoBehaviour
     private bool ConfirmHandler(int ix)
     {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
-        functionButtons[ix].AddInteractionPunch();
+        functionButtons[ix].AddInteractionPunch(0.5f);
         if (allowTyping && !_moduleSolved)
         {
             if (currentScreen == 0)
@@ -323,7 +323,7 @@ public class OrderPickingScript : MonoBehaviour
     private bool CancelHandler(int ix)
     {
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, functionButtons[ix].transform);
-        functionButtons[ix].AddInteractionPunch();
+        functionButtons[ix].AddInteractionPunch(0.5f);
         if (allowTyping && !_moduleSolved)
         {
             if (currentScreen == 0 && currentOrder == orderCount + 1)
