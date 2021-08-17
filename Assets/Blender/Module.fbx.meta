@@ -38,6 +38,10 @@ ModelImporter:
     100064: ScreenContainerGrey
     100066: NumpadPlate
     100068: Screw
+    100070: LED1
+    100072: LED2
+    100074: LED3
+    100076: LEDRims
     400000: 0
     400002: 0Button
     400004: 1
@@ -73,7 +77,12 @@ ModelImporter:
     400064: ScreenContainerGrey
     400066: NumpadPlate
     400068: Screw
+    400070: LED1
+    400072: LED2
+    400074: LED3
+    400076: LEDRims
     2100000: No Name
+    2100002: MetalMat
     2300000: 0
     2300002: 0Button
     2300004: 1
@@ -108,6 +117,10 @@ ModelImporter:
     2300062: ScreenContainerGrey
     2300064: NumpadPlate
     2300066: Screw
+    2300068: LED1
+    2300070: LED2
+    2300072: LED3
+    2300074: LEDRims
     3300000: 0
     3300002: 0Button
     3300004: 1
@@ -142,6 +155,10 @@ ModelImporter:
     3300062: ScreenContainerGrey
     3300064: NumpadPlate
     3300066: Screw
+    3300068: LED1
+    3300070: LED2
+    3300072: LED3
+    3300074: LEDRims
     4300000: ModelComponent
     4300002: ScreenContainerBlack
     4300004: Screen
@@ -176,6 +193,10 @@ ModelImporter:
     4300062: F3
     4300064: NumpadPlate
     4300066: Screw
+    4300068: LED1
+    4300070: LED2
+    4300072: LED3
+    4300074: LEDRims
   externalObjects: {}
   materials:
     importMaterials: 1

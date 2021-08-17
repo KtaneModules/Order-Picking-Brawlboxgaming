@@ -16,9 +16,12 @@ public class OrderPickingScript : MonoBehaviour
     public KMSelectable enterButton;
     public KMSelectable[] numberButtons, functionButtons;
     public TextMesh screenText;
+    public MeshRenderer[] LEDs;
+    public Material LEDsOnMat, LEDsOffMat;
 
     private static int _moduleIdCounter = 1;
-    private int _moduleId, orderCount, orderNumber, currentOrder = 1, currentScreen = 0, productNeeded, productTotal, productRemain, productId;
+    private int _moduleId, orderCount, orderNumber, currentOrder = 1, currentScreen = 0, productNeeded, productTotal, productRemain, productId, backspace, confirm, cancel;
+    private int[] palletTotals = new[] { 231, 360, 96, 216, 256, 196, 110 };
     private bool _moduleSolved, allowTyping = true;
     private string text, product, quantity, pallet, input;
     private string[] palletsArray = new[] { "CHEP", "SIPPL", "SLPR", "EWHITE", "ECHEP", "ESIPPL", "ESLPR" }, productsArray = new[] { "TT", "GC", "GP", "DN", "HK", "AX", "MM" };
@@ -38,18 +41,16 @@ public class OrderPickingScript : MonoBehaviour
         }
 
         orderCount = BombInfo.GetBatteryCount() % 3 + 1;
-        Debug.LogFormat("[Order Picking #{0}] Orders needed: {1}.", _moduleId, orderCount);
-        GenerateOrder();
 
         int backNum = BombInfo.GetSerialNumber().Select(ch => ch >= '0' && ch <= '9' ? ch - '0' : ch - 'A' + 1).Sum();
-        int backspace = backNum % 3;
+        backspace = backNum % 3;
 
         int conNum = BombInfo.GetPortCount() * BombInfo.GetPortPlateCount();
         if (conNum % 3 == backNum % 3)
         {
             conNum++;
         }
-        int confirm = conNum % 3;
+        confirm = conNum % 3;
 
         int canNum = 0;
         while (canNum == backspace || canNum == confirm)
@@ -57,11 +58,14 @@ public class OrderPickingScript : MonoBehaviour
             canNum++;
             canNum %= 3;
         }
-        int cancel = canNum;
+        cancel = canNum;
 
         Debug.LogFormat("[Order Picking #{0}] The confirm button is {1}.", _moduleId, functionButtons[confirm].name);
         Debug.LogFormat("[Order Picking #{0}] The cancel button is {1}.", _moduleId, functionButtons[cancel].name);
         Debug.LogFormat("[Order Picking #{0}] The backspace button is {1}.", _moduleId, functionButtons[backspace].name);
+
+        Debug.LogFormat("[Order Picking #{0}] Orders needed: {1}.", _moduleId, orderCount);
+        GenerateOrder();
 
         functionButtons[backspace].OnInteract += delegate ()
         {
@@ -90,9 +94,12 @@ public class OrderPickingScript : MonoBehaviour
 
     private void GenerateOrder()
     {
+        var random = RuleSeedable.GetRNG();
         Debug.LogFormat("[Order Picking #{0}] Order: {1}.", _moduleId, currentOrder);
         orderNumber = Rnd.Range(1000, 10000);
         Debug.LogFormat("[Order Picking #{0}] Order number: {1}.", _moduleId, orderNumber);
+        if (random.Seed != 1)
+            random.ShuffleFisherYates(palletTotals);
         pallet = palletsArray[Rnd.Range(0, palletsArray.Length)];
         Debug.LogFormat("[Order Picking #{0}] Pallet: {1}.", _moduleId, pallet);
         product = productsArray[Rnd.Range(0, productsArray.Length)];
@@ -102,31 +109,31 @@ public class OrderPickingScript : MonoBehaviour
         switch (pallet)
         {
             case "CHEP":
-                productTotal = 231;
+                productTotal = palletTotals[0];
                 break;
 
             case "SIPPL":
-                productTotal = 360;
+                productTotal = palletTotals[1];
                 break;
 
             case "SLPR":
-                productTotal = 96;
+                productTotal = palletTotals[2];
                 break;
 
             case "EWHITE":
-                productTotal = 216;
+                productTotal = palletTotals[3];
                 break;
 
             case "ECHEP":
-                productTotal = 256;
+                productTotal = palletTotals[4];
                 break;
 
             case "ESIPPL":
-                productTotal = 196;
+                productTotal = palletTotals[5];
                 break;
 
             case "ESLPR":
-                productTotal = 110;
+                productTotal = palletTotals[6];
                 break;
         }
         Debug.LogFormat("[Order Picking #{0}] Product total: {1}.", _moduleId, productTotal);
@@ -224,6 +231,7 @@ public class OrderPickingScript : MonoBehaviour
                     {
                         input = "";
                         currentScreen = 0;
+                        LEDs[currentOrder - 1].material = LEDsOnMat;
                         currentOrder++;
                         if (currentOrder != orderCount + 1)
                         {
@@ -327,6 +335,10 @@ public class OrderPickingScript : MonoBehaviour
             screenText.text += txt[i];
             yield return new WaitForSeconds(0.1f);
         }
+        for (int i = 0; i < LEDs.Length; i++)
+        {
+            LEDs[i].material = LEDsOffMat;
+        }
         yield return null;
     }
 
@@ -343,7 +355,99 @@ public class OrderPickingScript : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
         yield return new WaitForSeconds(5f);
+        currentScreen = 0;
         RenderScreen();
         allowTyping = true;
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} press <button> [buttons are: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, F1, F2, F3, Enter]";
+#pragma warning restore 414
+
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.ToLowerInvariant();
+        if (command.StartsWith("press ")) command = command.Substring(6);
+        else
+        {
+            yield return "sendtochaterror Button presses must start with press.";
+            yield break;
+        }
+
+        string[] list = command.Split(' ');
+        for (int i = 0; i < list.Length; i++)
+        {
+            switch (list[i])
+            {
+                case "0":
+                    numberButtons[0].OnInteract();
+                    break;
+                case "1":
+                    numberButtons[1].OnInteract();
+                    break;
+                case "2":
+                    numberButtons[2].OnInteract();
+                    break;
+                case "3":
+                    numberButtons[3].OnInteract();
+                    break;
+                case "4":
+                    numberButtons[4].OnInteract();
+                    break;
+                case "5":
+                    numberButtons[5].OnInteract();
+                    break;
+                case "6":
+                    numberButtons[6].OnInteract();
+                    break;
+                case "7":
+                    numberButtons[7].OnInteract();
+                    break;
+                case "8":
+                    numberButtons[8].OnInteract();
+                    break;
+                case "9":
+                    numberButtons[9].OnInteract();
+                    break;
+                case "f1":
+                    functionButtons[0].OnInteract();
+                    break;
+                case "f2":
+                    functionButtons[1].OnInteract();
+                    break;
+                case "f3":
+                    functionButtons[2].OnInteract();
+                    break;
+                case "enter":
+                    enterButton.OnInteract();
+                    break;
+            }
+            yield return new WaitForSeconds(0.25f);
+        }
+        yield return null;
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        while (currentOrder < orderCount + 1)
+        {
+            functionButtons[confirm].OnInteract();
+            yield return new WaitForSeconds(0.25f);
+            enterButton.OnInteract();
+            yield return new WaitForSeconds(0.25f);
+            functionButtons[confirm].OnInteract();
+            yield return new WaitForSeconds(0.25f);
+            var tmp = productRemain.ToString().ToCharArray();
+            foreach (var chr in tmp)
+            {
+                numberButtons[Convert.ToInt32(chr)-48].OnInteract();
+                yield return new WaitForSeconds(0.25f);
+            }
+            enterButton.OnInteract();
+            yield return new WaitForSeconds(0.25f);
+        }
+        functionButtons[cancel].OnInteract();
+
+        yield return null;
     }
 }
