@@ -23,7 +23,7 @@ public class OrderPickingScript : MonoBehaviour
     private int _moduleId, orderCount, orderNumber, currentOrder = 1, currentScreen = 0, productNeeded, productTotal, productRemain, productId, backspace, confirm, cancel;
     private int[] palletTotals = new[] { 231, 360, 96, 216, 256, 196, 110 }, edgework;
     private bool _moduleSolved, allowTyping = true;
-    private string text, product, quantity, pallet, input;
+    private string text, product, quantity, pallet, input = "";
     private string[] palletsArray = new[] { "CHEP", "SIPPL", "SLPR", "EWHITE", "ECHEP", "ESIPPL", "ESLPR" }, productsArray = new[] { "TT", "GC", "GP", "DN", "HK", "AX", "MM" };
 
     void Start()
@@ -276,6 +276,7 @@ public class OrderPickingScript : MonoBehaviour
         {
             if (currentScreen == 3)
             {
+                Debug.Log(input);
                 input = input.Substring(0, input.Length - 1);
                 text = text.Substring(0, text.Length - (input.Length + 1)) + input;
             }
